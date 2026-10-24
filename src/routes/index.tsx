@@ -4,6 +4,7 @@ import { PageLoader, PaintCursor, SmoothScroll } from "@/components/site/effects
 import {
   Animate, BrushPacks, Comparison, Faq, FeatureGrid, Finale, Footer, Journey, Layers, LiveBrushes, Numbers, Statement,
 } from "@/components/site/sections";
+import { About } from "@/components/site/About";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,6 +40,7 @@ function Index() {
         <Comparison />
         <Finale />
         <Faq />
+        <About />
       </main>
       <Footer />
     </>
