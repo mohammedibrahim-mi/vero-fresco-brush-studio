@@ -59,9 +59,10 @@ export function PaintCursor() {
 
   useEffect(() => {
     if (!enabled) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
     document.documentElement.classList.add("custom-cursor");
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
     const dpr = Math.min(window.devicePixelRatio, 2);
     const resize = () => {
       canvas.width = innerWidth * dpr;
@@ -77,7 +78,7 @@ export function PaintCursor() {
       mx = e.clientX;
       my = e.clientY;
       hue = (hue + 0.15) % SPECTRUM.length;
-      pts.push({ x: mx, y: my, life: 1, c: SPECTRUM[Math.floor(hue)] });
+      pts.push({ x: mx, y: my, life: 1, c: SPECTRUM[Math.floor(hue)] ?? "#0E0E10" });
       if (dotRef.current) dotRef.current.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
     };
     window.addEventListener("pointermove", move);
@@ -86,6 +87,7 @@ export function PaintCursor() {
       ctx.clearRect(0, 0, innerWidth, innerHeight);
       for (let i = pts.length - 1; i >= 0; i--) {
         const p = pts[i];
+        if (!p) continue;
         p.life -= 0.035;
         if (p.life <= 0) { pts.splice(i, 1); continue; }
         ctx.globalAlpha = p.life * 0.55;
@@ -181,7 +183,9 @@ export function Magnetic({ children, strength = 0.35 }: { children: ReactNode; s
       style={{ x: sx, y: sy }}
       className="inline-block"
       onPointerMove={(e) => {
-        const r = ref.current!.getBoundingClientRect();
+        const el = ref.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
         x.set((e.clientX - r.left - r.width / 2) * strength);
         y.set((e.clientY - r.top - r.height / 2) * strength);
       }}

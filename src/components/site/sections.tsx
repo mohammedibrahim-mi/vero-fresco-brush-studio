@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -18,12 +18,14 @@ import f4 from "@/assets/frame-4.jpg";
 import f5 from "@/assets/frame-5.jpg";
 import { BrushMark, PlayButton, SPECTRUM } from "./effects";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 
 const MOTION_OK = "(prefers-reduced-motion: no-preference)";
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const color = (i: number) => SPECTRUM[i] ?? "#318EFF";
 
 /** Runs GSAP setup only when motion is allowed; reverts on unmount. */
-function useGsap(scope: React.RefObject<HTMLElement | null>, setup: () => void) {
+function useGsap(scope: RefObject<HTMLElement | null>, setup: () => void) {
   useEffect(() => {
     const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
@@ -41,7 +43,7 @@ function Reveal({ children, className = "" }: { children: ReactNode; className?:
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-10% 0px" }}
-      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.9, ease: EASE }}
     >
       {children}
     </motion.div>
@@ -136,11 +138,13 @@ export function Journey() {
 }
 
 /* 5. Live Brushes */
+const BLOOM_COLORS = [color(0), color(4), color(5), color(1)];
 function BloomCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const c = ref.current!;
-    const ctx = c.getContext("2d")!;
+    const c = ref.current;
+    const ctx = c?.getContext("2d");
+    if (!c || !ctx) return;
     const resize = () => { c.width = c.offsetWidth / 2; c.height = c.offsetHeight / 2; };
     resize();
     window.addEventListener("resize", resize);
@@ -154,7 +158,7 @@ function BloomCanvas() {
       if (e.clientY < rect.top || e.clientY > rect.bottom) return;
       blobs.push({
         x: (e.clientX - rect.left) / 2, y: (e.clientY - rect.top) / 2, r: 4, life: 1,
-        c: [SPECTRUM[0], SPECTRUM[4], SPECTRUM[5], SPECTRUM[1]][Math.floor(Math.random() * 4)],
+        c: BLOOM_COLORS[Math.floor(Math.random() * BLOOM_COLORS.length)] ?? color(4),
       });
     };
     window.addEventListener("pointermove", move);
@@ -164,6 +168,7 @@ function BloomCanvas() {
       ctx.globalCompositeOperation = "multiply";
       for (let i = blobs.length - 1; i >= 0; i--) {
         const b = blobs[i];
+        if (!b) continue;
         b.r += (60 - b.r) * 0.04;
         b.life -= 0.006;
         if (b.life <= 0) { blobs.splice(i, 1); continue; }
@@ -226,14 +231,16 @@ const STATS = [
 function Counter({ v, pre, suf }: { v: number; pre: string; suf: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
-    if (v < 0 || !ref.current) return;
     const el = ref.current;
+    if (v < 0 || !el) return;
     const o = { n: 0 };
     const st = ScrollTrigger.create({
       trigger: el, start: "top 85%", once: true,
-      onEnter: () => gsap.to(o, { n: v, duration: 2, ease: "power3.out", onUpdate: () => {
-        el.textContent = pre + Math.round(o.n).toLocaleString("en-US") + suf;
-      } }),
+      onEnter: () => {
+        gsap.to(o, { n: v, duration: 2, ease: "power3.out", onUpdate: () => {
+          el.textContent = pre + Math.round(o.n).toLocaleString("en-US") + suf;
+        } });
+      },
     });
     return () => st.kill();
   }, [v, pre, suf]);
@@ -246,10 +253,10 @@ export function Numbers() {
       <div className="mt-24 grid grid-cols-2 gap-x-8 gap-y-16 md:grid-cols-4">
         {STATS.map((s, i) => (
           <Reveal key={s.l}>
-            <div className="display text-[clamp(3rem,7vw,6rem)]"><Counter {...s} /></div>
+            <div className="display text-[clamp(3rem,7vw,6rem)]"><Counter v={s.v} pre={s.pre} suf={s.suf} /></div>
             <motion.div className="mt-4 h-[2px] origin-left bg-spectrum"
               initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
-              transition={{ duration: 1.4, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }} />
+              transition={{ duration: 1.4, delay: i * 0.1, ease: EASE }} />
             <p className="eyebrow mt-4">{s.l}</p>
           </Reveal>
         ))}
@@ -269,7 +276,7 @@ export function Layers() {
   useGsap(ref, () => {
     gsap.utils.toArray<HTMLElement>(".ly-card").forEach((el, i) => {
       gsap.fromTo(el, { y: 0, rotateX: 0 }, {
-        y: LAYERS[i].y, rotateX: 18, ease: "none",
+        y: LAYERS[i]?.y ?? 0, rotateX: 18, ease: "none",
         scrollTrigger: { trigger: ref.current, start: "top 70%", end: "center center", scrub: true },
       });
     });
@@ -296,7 +303,8 @@ export function Animate() {
   const ref = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
   useGsap(ref, () => {
-    const t = track.current!;
+    const t = track.current;
+    if (!t || window.innerWidth < 768) return;
     const dist = () => t.scrollWidth - window.innerWidth;
     gsap.to(t, {
       x: () => -dist(), ease: "none",
@@ -304,7 +312,7 @@ export function Animate() {
     });
   });
   return (
-    <section ref={ref} id="animate" className="relative overflow-hidden py-24 md:flex md:h-screen md:items-center md:py-0">
+    <section ref={ref} id="animate" className="relative overflow-x-auto py-24 md:flex md:h-screen md:items-center md:overflow-hidden md:py-0">
       <div ref={track} className="flex w-max items-center gap-6 px-6 md:gap-8 md:px-[6vw]">
         <div className="w-[80vw] shrink-0 md:w-[34vw]">
           <p className="eyebrow">Animate</p>
@@ -331,13 +339,14 @@ export function Animate() {
 }
 
 /* 9. Feature grid */
-const FEATURES = [
+type Feature = { t: string; d: string; img: string };
+const FEATURES: Feature[] = [
   { t: "Symmetry", d: "Paint one side, mirror the rest — perfect mandalas in seconds.", img: symmetryImg },
   { t: "Paint Inside", d: "Stay in the lines automatically, no masks required.", img: paintInsideImg },
   { t: "Vector Trim", d: "Snip overlapping vector ends with a single swipe.", img: vectorTrimImg },
   { t: "Motion Presets", d: "Bounce, wiggle, pulse — one tap and it moves.", img: motionImg },
 ];
-function TiltCard({ f }: { f: (typeof FEATURES)[number] }) {
+function TiltCard({ f }: { f: Feature }) {
   const rx = useMotionValue(0), ry = useMotionValue(0);
   const srx = useSpring(rx, { stiffness: 200, damping: 18 }), sry = useSpring(ry, { stiffness: 200, damping: 18 });
   return (
@@ -377,11 +386,11 @@ export function FeatureGrid() {
 
 /* 10. Brush packs */
 const PACKS = [
-  { t: "Watercolour", c: SPECTRUM[4], n: "320 brushes" },
-  { t: "Oil", c: SPECTRUM[1], n: "410 brushes" },
-  { t: "Ink & Vector", c: SPECTRUM[5], n: "280 brushes" },
-  { t: "Pastel & Charcoal", c: SPECTRUM[3], n: "360 brushes" },
-  { t: "…and beyond", c: SPECTRUM[0], n: "New every month" },
+  { t: "Watercolour", c: color(4), n: "320 brushes" },
+  { t: "Oil", c: color(1), n: "410 brushes" },
+  { t: "Ink & Vector", c: color(5), n: "280 brushes" },
+  { t: "Pastel & Charcoal", c: color(3), n: "360 brushes" },
+  { t: "…and beyond", c: color(0), n: "New every month" },
 ];
 export function BrushPacks() {
   const ref = useRef<HTMLElement>(null);
@@ -522,6 +531,15 @@ export function Faq() {
 }
 
 /* 14. Footer */
+const FOOTER_LINKS: [string, string][] = [
+  ["Features", "#features"],
+  ["Brushes", "#brushes"],
+  ["Animate", "#animate"],
+  ["FAQ", "#faq"],
+  ["About", "#about"],
+  ["Privacy", "#"],
+  ["Terms", "#"],
+];
 export function Footer() {
   return (
     <footer className="border-t border-border">
@@ -529,11 +547,11 @@ export function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 py-12 md:flex-row">
         <a href="#top" className="flex items-center gap-2"><BrushMark /><span className="display text-lg">vero fresco</span></a>
         <nav className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-          {["Features", "Brushes", "Animate", "FAQ", "Privacy", "Terms"].map((l) => (
-            <a key={l} href={["Privacy", "Terms"].includes(l) ? "#" : `#${l.toLowerCase()}`} className="hover:text-foreground">{l}</a>
+          {FOOTER_LINKS.map(([l, h]) => (
+            <a key={l} href={h} className="hover:text-foreground">{l}</a>
           ))}
         </nav>
-        <p className="text-sm text-muted-foreground">© 2026 Vero Fresco</p>
+        <p className="text-sm text-muted-foreground">© 2026 Vero Fresco · A product of MIV Apps</p>
       </div>
     </footer>
   );

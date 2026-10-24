@@ -23,7 +23,6 @@ const frag = /* glsl */ `
   }`;
 
 function Ribbon({ index }: { index: number }) {
-  const mat = useRef<THREE.ShaderMaterial>(null);
   const geo = useMemo(() => {
     const pts: THREE.Vector3[] = [];
     const turns = 1.4 + index * 0.15;
@@ -37,19 +36,18 @@ function Ribbon({ index }: { index: number }) {
     return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 220, 0.13 - index * 0.008, 16, false);
   }, [index]);
   const uniforms = useMemo(
-    () => ({ uColor: { value: new THREE.Color(COLORS[index]) }, uTime: { value: 0 }, uProgress: { value: 1 } }),
+    () => ({ uColor: { value: new THREE.Color(COLORS[index] ?? "#318EFF") }, uTime: { value: 0 }, uProgress: { value: 1 } }),
     [index],
   );
   useFrame((s) => {
-    if (!mat.current) return;
-    mat.current.uniforms.uTime.value = s.clock.elapsedTime + index;
+    uniforms.uTime.value = s.clock.elapsedTime + index;
     const p = Math.min(window.scrollY / window.innerHeight, 1);
     const intro = Math.min(s.clock.elapsedTime / 2.2, 1);
-    mat.current.uniforms.uProgress.value = intro * (1 - p * 0.95);
+    uniforms.uProgress.value = intro * (1 - p * 0.95);
   });
   return (
     <mesh geometry={geo}>
-      <shaderMaterial ref={mat} vertexShader={vert} fragmentShader={frag} uniforms={uniforms} />
+      <shaderMaterial vertexShader={vert} fragmentShader={frag} uniforms={uniforms} />
     </mesh>
   );
 }

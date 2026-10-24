@@ -14,11 +14,12 @@ export function Nav() {
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
-  const links = [
+  const links: [string, string][] = [
     ["Features", "#features"],
     ["Brushes", "#brushes"],
     ["Animate", "#animate"],
     ["FAQ", "#faq"],
+    ["About", "#about"],
   ];
   return (
     <header className="fixed inset-x-0 top-4 z-50 flex justify-center px-4">
@@ -71,7 +72,7 @@ function HeroVisual() {
   );
   if (use3D === null) return null;
   if (!use3D) return img;
-  return <Suspense fallback={null}><HeroScene /></Suspense>;
+  return <Suspense fallback={img}><HeroScene /></Suspense>;
 }
 
 export function Hero({ videoSrc = "" }: { videoSrc?: string }) {
@@ -93,7 +94,7 @@ export function Hero({ videoSrc = "" }: { videoSrc?: string }) {
               animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
               transition={{ delay: 1.7 + i * 0.05, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             >
-              {ch === " " ? "\u00A0" : ch}
+              {ch === " " ? " " : ch}
             </motion.span>
           ))}
         </h1>
