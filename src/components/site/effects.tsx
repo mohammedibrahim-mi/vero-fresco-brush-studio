@@ -211,19 +211,39 @@ export function BrushMark({ className = "h-4 w-9" }: { className?: string }) {
   );
 }
 
-export function PlayButton({ size = "md" }: { size?: "md" | "lg" }) {
+/* ── APK download settings ────────────────────────────────
+   Put the APK in public/downloads/ and set APK_READY to true. */
+export const APK_URL = "/downloads/vero-fresco.apk";
+export const APK_READY = false;
+export const APK_VERSION = ""; // e.g. "1.0.0"
+/* ───────────────────────────────────────────────────────── */
+
+function AndroidIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="currentColor">
+      <path d="M17.6 9.48 19.44 6.3a.38.38 0 0 0-.66-.38l-1.86 3.22a11.4 11.4 0 0 0-9.84 0L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52ZM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z" />
+    </svg>
+  );
+}
+
+/** Primary CTA: downloads the APK directly (or shows "coming soon" until it's uploaded). */
+export function DownloadButton({ size = "md" }: { size?: "md" | "lg" }) {
+  const cls = `group relative inline-flex items-center gap-3 rounded-full bg-foreground font-medium text-background transition-shadow duration-300 hover:shadow-glow ${
+    size === "lg" ? "px-8 py-4 text-base" : "px-6 py-3 text-sm"
+  }`;
+  if (!APK_READY) {
+    return (
+      <span className={`${cls} cursor-default opacity-60 hover:shadow-none`} aria-disabled="true">
+        <AndroidIcon className="h-4 w-4" />
+        APK coming soon
+      </span>
+    );
+  }
   return (
     <Magnetic>
-      <a
-        href="#"
-        className={`group relative inline-flex items-center gap-3 rounded-full bg-foreground font-medium text-background transition-shadow duration-300 hover:shadow-glow ${
-          size === "lg" ? "px-8 py-4 text-base" : "px-6 py-3 text-sm"
-        }`}
-      >
-        <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
-          <path fill="currentColor" d="M4 2.5v19c0 .6.7 1 1.2.6l10.6-9.5c.4-.3.4-.9 0-1.2L5.2 1.9C4.7 1.5 4 1.9 4 2.5Zm13.6 7.3 2.9 1.6c.6.3.6 1 0 1.3l-2.9 1.6-2.4-2.2 2.4-2.3Z" />
-        </svg>
-        Get it on Google Play
+      <a href={APK_URL} download className={cls}>
+        <AndroidIcon className="h-4 w-4" />
+        Download APK{APK_VERSION ? ` · v${APK_VERSION}` : ""}
       </a>
     </Magnetic>
   );

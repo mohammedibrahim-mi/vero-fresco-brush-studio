@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
+import founderPhoto from "@/assets/founder.jpg";
 
 /* ── Edit these two values ─────────────────────────────── */
 const FOUNDER_LINKEDIN_URL = "https://www.linkedin.com/in/mohammed-ibrahim-a059b914a";
-const FOUNDER_PHOTO = ""; // optional: import a photo from @/assets and put it here
+const FOUNDER_PHOTO: string = founderPhoto;
 /* ──────────────────────────────────────────────────────── */
 
 function LinkedinIcon({ className = "" }: { className?: string }) {
@@ -79,7 +80,7 @@ export function About() {
           <div className="relative flex flex-col items-center gap-6 rounded-[calc(1.5rem-1px)] bg-card p-10 text-center shadow-soft sm:flex-row sm:text-left">
             <div className="shrink-0 rounded-full bg-spectrum p-[3px]">
               {FOUNDER_PHOTO ? (
-                <img src={FOUNDER_PHOTO} alt="Mohammed Ibrahim" className="h-24 w-24 rounded-full object-cover" />
+                <img src={FOUNDER_PHOTO} alt="Mohammed Ibrahim" width={480} height={480} loading="lazy" className="h-28 w-28 rounded-full border-4 border-card object-cover" />
               ) : (
                 <div className="flex h-24 w-24 items-center justify-center rounded-full bg-card">
                   <span className="display text-3xl">MI</span>

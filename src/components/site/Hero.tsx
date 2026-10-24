@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import heroImg from "@/assets/hero-phone.jpg";
-import { BrushMark, Magnetic, PlayButton } from "./effects";
+import { BrushMark, DownloadButton, Magnetic } from "./effects";
 
 const HeroScene = lazy(() => import("./HeroScene"));
 
@@ -18,6 +18,7 @@ export function Nav() {
     ["Features", "#features"],
     ["Brushes", "#brushes"],
     ["Animate", "#animate"],
+    ["Download", "#download"],
     ["FAQ", "#faq"],
     ["About", "#about"],
   ];
@@ -38,13 +39,13 @@ export function Nav() {
           ))}
         </ul>
         <a
-          href="#"
+          href="#download"
           className={`rounded-full bg-foreground font-medium text-background transition-all hover:shadow-glow ${
             scrolled ? "px-4 py-1.5 text-xs" : "px-5 py-2 text-sm"
           }`}
         >
-          <span className="hidden sm:inline">Get it on Google Play</span>
-          <span className="sm:hidden">Get app</span>
+          <span className="hidden sm:inline">Download APK</span>
+          <span className="sm:hidden">Download</span>
         </a>
       </nav>
     </header>
@@ -102,14 +103,14 @@ export function Hero({ videoSrc = "" }: { videoSrc?: string }) {
           className="mt-6 max-w-xl text-lg text-muted-foreground md:text-xl"
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.3 }}
         >
-          The pro painting & drawing app for Android. Made for everyone. <span className="serif-em text-foreground">Free for all.</span>
+          The pro painting & drawing app for Android. Made for everyone. <span className="serif-em text-foreground">Download it free.</span>
         </motion.p>
         <motion.div
           className="mt-8 flex flex-wrap items-center justify-center gap-3"
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.45 }}
         >
-          <PlayButton />
-          <Magnetic>
+          <DownloadButton />
+          {videoSrc && <Magnetic>
             <button
               onClick={() => setOpen(true)}
               className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-6 py-3 text-sm font-medium transition-colors hover:border-foreground"
@@ -117,7 +118,7 @@ export function Hero({ videoSrc = "" }: { videoSrc?: string }) {
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[8px] text-background">▶</span>
               Watch the film
             </button>
-          </Magnetic>
+          </Magnetic>}
         </motion.div>
       </div>
 

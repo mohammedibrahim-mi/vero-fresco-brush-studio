@@ -16,7 +16,7 @@ import f2 from "@/assets/frame-2.jpg";
 import f3 from "@/assets/frame-3.jpg";
 import f4 from "@/assets/frame-4.jpg";
 import f5 from "@/assets/frame-5.jpg";
-import { BrushMark, PlayButton, SPECTRUM } from "./effects";
+import { APK_READY, BrushMark, DownloadButton, SPECTRUM } from "./effects";
 
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 
@@ -62,7 +62,7 @@ function Heading({ eyebrow, children, className = "" }: { eyebrow: string; child
 /* 3. Statement */
 export function Statement() {
   const ref = useRef<HTMLElement>(null);
-  const text = "Thousands of brushes. Unlimited layers. Real motion. All in your pocket — and it costs nothing.";
+  const text = "Expressive brushes. Layers. Animation. A full painting studio in your pocket — and it costs nothing.";
   useGsap(ref, () => {
     gsap.fromTo(".st-word", { opacity: 0.15 }, {
       opacity: 1, stagger: 0.08, ease: "none",
@@ -85,7 +85,7 @@ export function Statement() {
 
 /* 4. Journey */
 const STEPS = [
-  { n: "01", t: "Sketch", d: "Capture ideas anywhere with pressure-sensitive pencils.", img: brushesImg },
+  { n: "01", t: "Sketch", d: "Capture ideas anywhere with pencils, inks and markers.", img: brushesImg },
   { n: "02", t: "Paint", d: "Live brushes that bloom, blend and smudge like the real thing.", img: liveBrush },
   { n: "03", t: "Animate", d: "Bring drawings to life frame by frame.", img: animateImg },
 ];
@@ -221,50 +221,6 @@ export function LiveBrushes() {
   );
 }
 
-/* 6. Numbers */
-const STATS = [
-  { v: 2000, pre: "", suf: "+", l: "brushes" },
-  { v: -1, pre: "∞", suf: "", l: "layers" },
-  { v: 9, pre: "<", suf: " ms", l: "stylus latency" },
-  { v: 0, pre: "₹", suf: "", l: "forever" },
-];
-function Counter({ v, pre, suf }: { v: number; pre: string; suf: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (v < 0 || !el) return;
-    const o = { n: 0 };
-    const st = ScrollTrigger.create({
-      trigger: el, start: "top 85%", once: true,
-      onEnter: () => {
-        gsap.to(o, { n: v, duration: 2, ease: "power3.out", onUpdate: () => {
-          el.textContent = pre + Math.round(o.n).toLocaleString("en-US") + suf;
-        } });
-      },
-    });
-    return () => st.kill();
-  }, [v, pre, suf]);
-  return <span ref={ref}>{v < 0 ? pre : pre + v.toLocaleString("en-US") + suf}</span>;
-}
-export function Numbers() {
-  return (
-    <section className="mx-auto max-w-7xl px-6 py-40">
-      <Heading eyebrow="By the numbers">Pro power, <span className="serif-em">zero price.</span></Heading>
-      <div className="mt-24 grid grid-cols-2 gap-x-8 gap-y-16 md:grid-cols-4">
-        {STATS.map((s, i) => (
-          <Reveal key={s.l}>
-            <div className="display text-[clamp(3rem,7vw,6rem)]"><Counter v={s.v} pre={s.pre} suf={s.suf} /></div>
-            <motion.div className="mt-4 h-[2px] origin-left bg-spectrum"
-              initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
-              transition={{ duration: 1.4, delay: i * 0.1, ease: EASE }} />
-            <p className="eyebrow mt-4">{s.l}</p>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 /* 7. Layers */
 const LAYERS = [
   { l: "Light", pos: "0%", y: -90 },
@@ -283,7 +239,7 @@ export function Layers() {
   });
   return (
     <section ref={ref} className="mx-auto max-w-6xl px-6 py-40">
-      <Heading eyebrow="Layers">Build depth, <span className="serif-em">layer by layer.</span> No limits.</Heading>
+      <Heading eyebrow="Layers">Build depth, <span className="serif-em">layer by layer.</span></Heading>
       <div className="mt-28 flex flex-col items-center [perspective:1400px]">
         {LAYERS.map((ly) => (
           <div key={ly.l} className="ly-card relative w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
@@ -386,11 +342,11 @@ export function FeatureGrid() {
 
 /* 10. Brush packs */
 const PACKS = [
-  { t: "Watercolour", c: color(4), n: "320 brushes" },
-  { t: "Oil", c: color(1), n: "410 brushes" },
-  { t: "Ink & Vector", c: color(5), n: "280 brushes" },
-  { t: "Pastel & Charcoal", c: color(3), n: "360 brushes" },
-  { t: "…and beyond", c: color(0), n: "New every month" },
+  { t: "Watercolour", c: color(4), n: "Soft washes that bloom and blend" },
+  { t: "Oil", c: color(1), n: "Thick, textured strokes" },
+  { t: "Ink & Vector", c: color(5), n: "Crisp lines that scale cleanly" },
+  { t: "Pastel & Charcoal", c: color(3), n: "Dry, grainy sketching" },
+  { t: "Pencil", c: color(0), n: "Light sketches and line work" },
 ];
 export function BrushPacks() {
   const ref = useRef<HTMLElement>(null);
@@ -421,57 +377,7 @@ export function BrushPacks() {
   );
 }
 
-/* 11. Comparison */
-export function Comparison() {
-  const other = ["Paywalled brushes", "Layer limits", "Ads between strokes", "Locked export formats"];
-  const ours = ["Every brush, free", "Unlimited layers", "No ads, ever", "Cloud sync & PSD export"];
-  return (
-    <section className="mx-auto max-w-6xl px-6 py-40">
-      <Heading eyebrow="Sketch here, finish anywhere">Why pay for <span className="serif-em">permission?</span></Heading>
-      <div className="mt-20 grid gap-6 md:grid-cols-2">
-        <Reveal className="rounded-3xl border border-border p-10">
-          <p className="eyebrow">Other apps</p>
-          <ul className="mt-8 space-y-5">
-            {other.map((o) => (
-              <li key={o} className="flex items-center gap-4 text-lg text-muted-foreground line-through decoration-border">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-xs no-underline">×</span>{o}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-        <Reveal className="relative rounded-3xl bg-foreground p-10 text-background shadow-soft">
-          <div className="absolute inset-x-10 top-0 h-[3px] rounded-b bg-spectrum" />
-          <p className="eyebrow">Vero Fresco</p>
-          <ul className="mt-8 space-y-5">
-            {ours.map((o) => (
-              <li key={o} className="flex items-center gap-4 text-lg">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-spectrum text-xs text-foreground">✓</span>{o}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
 /* 12. Finale */
-function QrPlaceholder() {
-  const cells = Array.from({ length: 21 * 21 }, (_, i) => {
-    const x = i % 21, y = Math.floor(i / 21);
-    const finder = (a: number, b: number) => x >= a && x < a + 7 && y >= b && y < b + 7;
-    if (finder(0, 0) || finder(14, 0) || finder(0, 14)) {
-      const lx = x < 7 ? x : x - 14, ly = y < 7 ? y : y - 14;
-      return lx === 0 || lx === 6 || ly === 0 || ly === 6 || (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4);
-    }
-    return ((x * 7 + y * 13 + x * y) % 5) < 2;
-  });
-  return (
-    <svg viewBox="0 0 21 21" className="h-24 w-24 rounded-lg bg-card p-2" aria-label="QR code placeholder">
-      {cells.map((on, i) => on && <rect key={i} x={i % 21} y={Math.floor(i / 21)} width="1" height="1" fill="currentColor" />)}
-    </svg>
-  );
-}
 export function Finale() {
   return (
     <section className="relative h-screen min-h-[640px] overflow-hidden">
@@ -482,11 +388,8 @@ export function Finale() {
         <Reveal>
           <h2 className="display text-[clamp(3.2rem,11vw,10rem)]">Creativity is <span className="serif-em text-spectrum">free.</span></h2>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6">
-            <PlayButton size="lg" />
-            <div className="flex items-center gap-3 text-left text-foreground">
-              <QrPlaceholder />
-              <span className="eyebrow max-w-[7rem]">Scan to install on Android</span>
-            </div>
+            <DownloadButton size="lg" />
+            <a href="#download" className="eyebrow underline-offset-4 hover:underline">How to install</a>
           </div>
         </Reveal>
       </div>
@@ -494,13 +397,44 @@ export function Finale() {
   );
 }
 
-/* 13. FAQ */
+/* 13. Download & install */
+const INSTALL_STEPS = [
+  { t: "Download the APK", d: "Tap the download button on your Android phone or tablet." },
+  { t: "Allow the install", d: "If Android asks, allow your browser to install apps. This is normal for apps outside the Play Store." },
+  { t: "Open and paint", d: "Open the downloaded file, tap Install, then launch Vero Fresco." },
+];
+export function Download() {
+  return (
+    <section id="download" className="mx-auto max-w-6xl px-6 py-40">
+      <Heading eyebrow="Download">Get Vero Fresco <span className="serif-em text-spectrum">on Android.</span></Heading>
+      <Reveal className="mt-10 flex flex-col items-center gap-3 text-center">
+        <DownloadButton size="lg" />
+        <p className="text-sm text-muted-foreground">
+          {APK_READY ? "Direct download for Android phones and tablets." : "The APK will be available here very soon."}
+        </p>
+      </Reveal>
+      <ol className="mt-20 grid gap-6 md:grid-cols-3">
+        {INSTALL_STEPS.map((step, i) => (
+          <li key={step.t}>
+            <Reveal className="h-full rounded-3xl border border-border bg-card p-8 shadow-soft">
+              <span className="font-display text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+              <h3 className="display mt-3 text-2xl">{step.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{step.d}</p>
+            </Reveal>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/* 14. FAQ */
 const FAQS = [
-  { q: "Is Vero Fresco free?", a: "Yes. Every brush, every feature, no subscriptions and no ads. Free for everyone, forever." },
-  { q: "Is there a layer limit?", a: "No. Add as many layers as your device's memory allows — groups, masks and blend modes included." },
-  { q: "Which Android devices are supported?", a: "Phones and tablets running Android 9 or newer. Pressure and tilt work with S Pen and USI 2.0 styluses." },
-  { q: "Can I export to PSD, PNG or MP4?", a: "Yes. Export layered PSD files, transparent PNGs, and MP4 or GIF for animations." },
-  { q: "How do I add brushes?", a: "Open the Brushes panel and tap “Get more” for free packs, or import .abr and .brushset files directly." },
+  { q: "Is Vero Fresco free?", a: "Yes. You can download the APK from this page at no cost." },
+  { q: "Why isn't it on the Play Store?", a: "For now, Vero Fresco is distributed directly from this website. A Play Store release may come later." },
+  { q: "Is it safe to install an APK?", a: "Only download Vero Fresco from this website. Android will ask you to allow installs from your browser — that's the standard prompt for any app installed outside the Play Store." },
+  { q: "Which devices does it work on?", a: "Vero Fresco is made for Android phones and tablets." },
+  { q: "How do I update?", a: "Download the latest APK from this page and install it over your current version." },
 ];
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
@@ -530,15 +464,14 @@ export function Faq() {
   );
 }
 
-/* 14. Footer */
+/* 15. Footer */
 const FOOTER_LINKS: [string, string][] = [
   ["Features", "#features"],
   ["Brushes", "#brushes"],
   ["Animate", "#animate"],
+  ["Download", "#download"],
   ["FAQ", "#faq"],
   ["About", "#about"],
-  ["Privacy", "#"],
-  ["Terms", "#"],
 ];
 export function Footer() {
   return (
