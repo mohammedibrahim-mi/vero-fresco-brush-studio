@@ -28,7 +28,7 @@ function Index() {
       <PaintCursor />
       <Nav />
       <main>
-        <Hero videoSrc="" />
+        <Hero />
         <Statement />
         <Journey />
         <LiveBrushes />
