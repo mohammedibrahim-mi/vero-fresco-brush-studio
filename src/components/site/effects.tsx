@@ -212,10 +212,14 @@ export function BrushMark({ className = "h-4 w-9" }: { className?: string }) {
 }
 
 /* ── APK download settings ────────────────────────────────
-   Put the APK in public/downloads/ and set APK_READY to true. */
-export const APK_URL = "/downloads/vero-fresco.apk";
-export const APK_READY = false;
-export const APK_VERSION = ""; // e.g. "1.0.0"
+   The APK is hosted as a GitHub Release asset. "latest/download" always
+   points at the newest release, so new versions only need a new release. */
+export const APK_URL =
+  "https://github.com/mohammedibrahim-mi/vero-fresco-releases/releases/latest/download/Vero_Fresco.apk";
+export const APK_READY = true;
+export const APK_VERSION = "1.0";
+export const APK_SIZE = "49 MB";
+export const APK_MIN_ANDROID = "Android 10";
 /* ───────────────────────────────────────────────────────── */
 
 function AndroidIcon({ className = "" }: { className?: string }) {

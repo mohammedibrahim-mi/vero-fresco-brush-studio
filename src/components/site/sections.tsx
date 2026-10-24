@@ -16,7 +16,7 @@ import f2 from "@/assets/frame-2.jpg";
 import f3 from "@/assets/frame-3.jpg";
 import f4 from "@/assets/frame-4.jpg";
 import f5 from "@/assets/frame-5.jpg";
-import { APK_READY, BrushMark, DownloadButton, SPECTRUM } from "./effects";
+import { APK_MIN_ANDROID, APK_READY, APK_SIZE, APK_VERSION, BrushMark, DownloadButton, SPECTRUM } from "./effects";
 
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 
@@ -410,7 +410,7 @@ export function Download() {
       <Reveal className="mt-10 flex flex-col items-center gap-3 text-center">
         <DownloadButton size="lg" />
         <p className="text-sm text-muted-foreground">
-          {APK_READY ? "Direct download for Android phones and tablets." : "The APK will be available here very soon."}
+          {APK_READY ? `Version ${APK_VERSION} · ${APK_SIZE} · Requires ${APK_MIN_ANDROID} or newer` : "The APK will be available here very soon."}
         </p>
       </Reveal>
       <ol className="mt-20 grid gap-6 md:grid-cols-3">
@@ -433,7 +433,7 @@ const FAQS = [
   { q: "Is Vero Fresco free?", a: "Yes. You can download the APK from this page at no cost." },
   { q: "Why isn't it on the Play Store?", a: "For now, Vero Fresco is distributed directly from this website. A Play Store release may come later." },
   { q: "Is it safe to install an APK?", a: "Only download Vero Fresco from this website. Android will ask you to allow installs from your browser — that's the standard prompt for any app installed outside the Play Store." },
-  { q: "Which devices does it work on?", a: "Vero Fresco is made for Android phones and tablets." },
+  { q: "Which devices does it work on?", a: "Android phones and tablets running Android 10 or newer." },
   { q: "How do I update?", a: "Download the latest APK from this page and install it over your current version." },
 ];
 export function Faq() {

@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-phone.jpg";
-import { BrushMark, DownloadButton, Magnetic } from "./effects";
+import { BrushMark, DownloadButton } from "./effects";
 
 const HeroScene = lazy(() => import("./HeroScene"));
 
@@ -76,8 +76,7 @@ function HeroVisual() {
   return <Suspense fallback={img}><HeroScene /></Suspense>;
 }
 
-export function Hero({ videoSrc = "" }: { videoSrc?: string }) {
-  const [open, setOpen] = useState(false);
+export function Hero() {
   const word = "Vero Fresco".split("");
   return (
     <section id="top" className="relative flex min-h-[100svh] flex-col items-center overflow-hidden pt-32">
@@ -110,15 +109,6 @@ export function Hero({ videoSrc = "" }: { videoSrc?: string }) {
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.45 }}
         >
           <DownloadButton />
-          {videoSrc && <Magnetic>
-            <button
-              onClick={() => setOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-6 py-3 text-sm font-medium transition-colors hover:border-foreground"
-            >
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[8px] text-background">▶</span>
-              Watch the film
-            </button>
-          </Magnetic>}
         </motion.div>
       </div>
 
@@ -128,26 +118,6 @@ export function Hero({ videoSrc = "" }: { videoSrc?: string }) {
         </ClientOnly>
       </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="fixed inset-0 z-[150] flex items-center justify-center bg-overlay p-4 backdrop-blur-sm"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={() => setOpen(false)}
-            role="dialog" aria-modal="true" aria-label="Vero Fresco film"
-          >
-            <motion.div
-              className="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-card shadow-soft"
-              initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <video src={videoSrc || undefined} poster={heroImg} controls autoPlay playsInline className="aspect-video w-full bg-foreground" />
-              <button onClick={() => setOpen(false)} aria-label="Close"
-                className="glass absolute right-4 top-4 h-10 w-10 rounded-full text-lg">×</button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
